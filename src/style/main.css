@@ -1,0 +1,12 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html,
+body {
+  @apply bg-slate-300;
+}
+
+main {
+  @apply flex flex-col flex-1 h-full;
+}
