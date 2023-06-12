@@ -2,48 +2,13 @@
 
 const nextConfig = {
   images: {
+    deviceSizes: [342, 500, 780],
     remotePatterns: [
       {
         protocol: "https",
         hostname: "image.tmdb.org",
         port: "",
-        pathname: "/t/p/w92/**",
-      },
-      {
-        protocol: "https",
-        hostname: "image.tmdb.org",
-        port: "",
-        pathname: "/t/p/w154/**",
-      },
-      {
-        protocol: "https",
-        hostname: "image.tmdb.org",
-        port: "",
-        pathname: "/t/p/w185/**",
-      },
-      {
-        protocol: "https",
-        hostname: "image.tmdb.org",
-        port: "",
-        pathname: "/t/p/w342/**",
-      },
-      {
-        protocol: "https",
-        hostname: "image.tmdb.org",
-        port: "",
-        pathname: "/t/p/w500/**",
-      },
-      {
-        protocol: "https",
-        hostname: "image.tmdb.org",
-        port: "",
-        pathname: "/t/p/w780/**",
-      },
-      {
-        protocol: "https",
-        hostname: "image.tmdb.org",
-        port: "",
-        pathname: "/t/p/original/**",
+        pathname: "/t/p/**",
       },
     ],
   },

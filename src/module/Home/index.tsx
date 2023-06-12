@@ -3,7 +3,6 @@ import Image from "next/image";
 import { useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { IMovie, ISeries } from "@/src/core/helper/interface";
-import { imageSizeRender } from "@/src/core/util/imageSize";
 import moment from "moment";
 import "swiper/css";
 
@@ -14,6 +13,10 @@ interface IMidiaChange {
 
 const formatData = (data: string) => {
   return moment(data, "YYYY-MM-DD").format("DD/MM/YYYY");
+};
+
+const imageLoader = ({ src, width, quality }) => {
+  return `${process.env.NEXT_PUBLIC_API_IMG_URL}/w${width}${src}`;
 };
 
 export default function Home({
@@ -51,20 +54,24 @@ export default function Home({
           </div>
         </div>
       </div>
-      <Swiper spaceBetween={20} slidesPerView={1.2}>
+      <Swiper spaceBetween={10} slidesPerView={1.3}>
         {midiaChange.arr.map((item) => (
           <SwiperSlide
             key={item.id}
             className="bg-white rounded-md !flex shadow-md"
           >
-            <Image
-              src={imageSizeRender("w185", item.poster_path)}
-              alt={item.title || item.name}
-              width={185}
-              height={0}
-              className=" w-fit p-2 rounded-md"
-            />
-            <div className="flex flex-col justify-between py-2 pr-3 break-words">
+            <div className="w-32">
+              <Image
+                loader={imageLoader}
+                src={item.poster_path}
+                alt={item.title || item.name}
+                width={300}
+                height={300}
+                priority={true}
+                className="w-fit p-2 rounded-md"
+              />
+            </div>
+            <div className="flex flex-col justify-between py-2 pr-3 break-words w-32">
               <div className="font-medium leading-4">
                 {item.title || item.name}
               </div>
