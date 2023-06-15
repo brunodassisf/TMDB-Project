@@ -1,9 +1,13 @@
 "use client";
-import Image from "next/image";
+
 import { useState } from "react";
+import Image from "next/image";
+import Link from "next/link";
+import moment from "moment";
+
 import { Swiper, SwiperSlide } from "swiper/react";
 import { IMovie, ISeries } from "@/src/core/helper/interface";
-import moment from "moment";
+
 import "swiper/css";
 
 interface IMidiaChange {
@@ -20,15 +24,15 @@ const imageLoader = ({ src, width, quality }) => {
 };
 
 export default function Home({
-  movies,
-  series,
+  moviesArr,
+  seriesArr,
 }: {
-  movies: IMovie[];
-  series: ISeries[];
+  moviesArr: IMovie[];
+  seriesArr: ISeries[];
 }) {
   const [midiaChange, setMidiaChange] = useState<IMidiaChange>({
     active: true,
-    arr: series,
+    arr: seriesArr,
   });
 
   return (
@@ -40,7 +44,7 @@ export default function Home({
             className={`rounded-full font-medium px-3 py-1 ${
               midiaChange.active ? "bg-blue-600 text-white" : undefined
             }`}
-            onClick={() => setMidiaChange({ active: true, arr: series })}
+            onClick={() => setMidiaChange({ active: true, arr: seriesArr })}
           >
             Series TV
           </div>
@@ -48,13 +52,27 @@ export default function Home({
             className={`rounded-full font-medium px-3 py-1 ${
               !midiaChange.active ? "bg-blue-600 text-white" : undefined
             }`}
-            onClick={() => setMidiaChange({ active: false, arr: movies })}
+            onClick={() => setMidiaChange({ active: false, arr: moviesArr })}
           >
             Filmes
           </div>
         </div>
       </div>
-      <Swiper spaceBetween={10} slidesPerView={1.3}>
+      <Swiper
+        spaceBetween={10}
+        slidesPerView={1.3}
+        breakpoints={{
+          640: {
+            slidesPerView: 2.3,
+          },
+          768: {
+            slidesPerView: 3.3,
+          },
+          1024: {
+            slidesPerView: 4.3,
+          },
+        }}
+      >
         {midiaChange.arr.map((item) => (
           <SwiperSlide
             key={item.id}
@@ -82,6 +100,14 @@ export default function Home({
           </SwiperSlide>
         ))}
       </Swiper>
+      <div className="mt-3 float-right">
+        <Link
+          href={`/populares/${midiaChange.active ? "tv" : "movie"}`}
+          className="font-medium cursor-pointer bg-blue-500 text-white rounded-full py-1 px-3"
+        >
+          Ver mais
+        </Link>
+      </div>
     </div>
   );
 }

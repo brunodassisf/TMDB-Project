@@ -10,3 +10,13 @@ body {
 main {
   @apply flex flex-col flex-1 h-full;
 }
+
+.paragrafy-limit {
+  display: -webkit-box;
+  -webkit-line-clamp: 5;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  position: relative;
+
+  @apply font-light text-sm;
+}
