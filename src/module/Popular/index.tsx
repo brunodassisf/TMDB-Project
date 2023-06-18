@@ -1,18 +1,22 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { getPopular } from "@/src/core/serverFecth/getPopular";
-import Pagination from "@/src/core/components/Pagination";
 import Spinner from "@/src/core/components/Spinner";
 import { IMovie, ISeries } from "@/src/core/helper/interface";
 import { FaAngleLeft } from "react-icons/fa";
+import useScrollInfinity from "@/src/core/hook/useInfiniteScroll";
+import Skeleton from "@/src/core/components/Skeleton";
 
 export default function Popular() {
   const router = useRouter();
   const params = useParams();
+  const targetRef = useRef<HTMLDivElement | null>(null);
+  const callNextPage = useScrollInfinity(targetRef.current);
   const [loading, setLoading] = useState<boolean>(false);
+  const [isStartFetchResults, setIsStartFetchResults] = useState<boolean>(true);
   const [populars, setPopulars] = useState({
     page: 1,
     results: [],
@@ -20,18 +24,34 @@ export default function Popular() {
     total_results: 0,
   });
 
+  const fetchPopular = async (page?: number) => {
+    const popularArr = await getPopular<IMovie | ISeries>({
+      type: params.slug,
+      page,
+    });
+    setPopulars((prev) => ({
+      ...popularArr,
+      page,
+      results: prev.results.concat(popularArr.results),
+    }));
+    setLoading(false);
+  };
+
   useEffect(() => {
-    setLoading(true);
-    const fetchPopular = async () => {
-      const popularArr = await getPopular<IMovie | ISeries>({
-        type: params.slug,
-        page: populars.page,
-      });
-      setPopulars(popularArr);
-      setLoading(false);
-    };
-    fetchPopular();
-  }, [populars.page]);
+    if (!callNextPage && isStartFetchResults) {
+      setLoading(true);
+      fetchPopular(populars.page);
+      setIsStartFetchResults(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (callNextPage && !isStartFetchResults) {
+      setLoading(true);
+      fetchPopular(populars.page + 1);
+      console.log("buscando pagina: " + populars.page);
+    }
+  }, [callNextPage]);
 
   const redirectHome = () => {
     router.push("/");
@@ -39,6 +59,12 @@ export default function Popular() {
 
   const imageLoader = ({ src, width, quality }) => {
     return `${process.env.NEXT_PUBLIC_API_IMG_URL}/w${width}${src}`;
+  };
+
+  const renderSkeletons = () => {
+    return new Array(40)
+      .fill(<Skeleton width="h-full" height="h-48" />)
+      .map((item, index) => <div key={index}>{item}</div>);
   };
 
   return (
@@ -56,10 +82,14 @@ export default function Popular() {
             {params.slug === "tv" ? "Series" : "Filmes"} Populares
           </h3>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {populars.results.map((item) => (
-            <>
-              {item.title !== "" && item.name !== "" && item.overview !== "" ? (
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-5">
+          {populars.results.length > 0 ? (
+            populars.results
+              .filter(
+                (item) =>
+                  item.title !== "" && item.name !== "" && item.overview !== ""
+              )
+              .map((item) => (
                 <div
                   key={item.id}
                   className="bg-white  rounded-lg shadow-md cursor-pointer"
@@ -82,15 +112,14 @@ export default function Popular() {
                     </div>
                   </div>
                 </div>
-              ) : null}
-            </>
-          ))}
+              ))
+          ) : (
+            <>{renderSkeletons()}</>
+          )}
+
+          <div ref={targetRef} />
+          {/* {renderSkeletons()} */}
         </div>
-        <Pagination
-          currentPage={populars.page}
-          totalPages={populars.total_pages}
-          onPageChange={(num) => setPopulars({ ...populars, page: num })}
-        />
       </div>
     </>
   );
