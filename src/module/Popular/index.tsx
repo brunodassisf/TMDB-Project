@@ -57,7 +57,7 @@ export default function Popular() {
     router.push("/");
   };
 
-  const imageLoader = ({ src, width, quality }) => {
+  const imageLoader = ({ src, width }) => {
     return `${process.env.NEXT_PUBLIC_API_IMG_URL}/w${width}${src}`;
   };
 
@@ -116,9 +116,7 @@ export default function Popular() {
           ) : (
             <>{renderSkeletons()}</>
           )}
-
           <div ref={targetRef} />
-          {/* {renderSkeletons()} */}
         </div>
       </div>
     </>
