@@ -2,20 +2,23 @@
 
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, usePathname, useRouter } from "next/navigation";
 import { getPopular } from "@/src/core/serverFecth/getPopular";
 import Spinner from "@/src/core/components/Spinner";
-import { IMovie, ISeries } from "@/src/core/helper/interface";
+import { IMedia } from "@/src/core/helper/interface";
 import { FaAngleLeft } from "react-icons/fa";
 import useScrollInfinity from "@/src/core/hook/useInfiniteScroll";
 import Skeleton from "@/src/core/components/Skeleton";
+import { imageLoader } from "@/src/core/helper/image";
 
 export default function Popular() {
   const router = useRouter();
   const params = useParams();
+  const pathname = usePathname();
   const targetRef = useRef<HTMLDivElement | null>(null);
   const callNextPage = useScrollInfinity(targetRef.current);
   const [loading, setLoading] = useState<boolean>(false);
+
   const [isStartFetchResults, setIsStartFetchResults] = useState<boolean>(true);
   const [populars, setPopulars] = useState({
     page: 1,
@@ -25,7 +28,7 @@ export default function Popular() {
   });
 
   const fetchPopular = async (page?: number) => {
-    const popularArr = await getPopular<IMovie | ISeries>({
+    const popularArr = await getPopular<IMedia>({
       type: params.slug,
       page,
     });
@@ -57,14 +60,14 @@ export default function Popular() {
     router.push("/");
   };
 
-  const imageLoader = ({ src, width }) => {
-    return `${process.env.NEXT_PUBLIC_API_IMG_URL}/w${width}${src}`;
-  };
-
   const renderSkeletons = () => {
     return new Array(40)
       .fill(<Skeleton width="h-full" height="h-48" />)
       .map((item, index) => <div key={index}>{item}</div>);
+  };
+
+  const handleRedirectById = (id: string) => {
+    router.push(`${pathname}/${id}`);
   };
 
   return (
@@ -87,12 +90,16 @@ export default function Popular() {
             populars.results
               .filter(
                 (item) =>
-                  item.title !== "" && item.name !== "" && item.overview !== ""
+                  item.title !== "" &&
+                  item.name !== "" &&
+                  item.overview !== "" &&
+                  item.backdrop_path !== null
               )
               .map((item) => (
                 <div
                   key={item.id}
                   className="bg-white  rounded-lg shadow-md cursor-pointer"
+                  onClick={() => handleRedirectById(item.id)}
                 >
                   <div className="flex">
                     <Image

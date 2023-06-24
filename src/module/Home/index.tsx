@@ -6,12 +6,13 @@ import Link from "next/link";
 import moment from "moment";
 
 import { Swiper, SwiperSlide } from "swiper/react";
-import { IMovie, ISeries } from "@/src/core/helper/interface";
+import { IMovie, ISerie } from "@/src/core/helper/interface";
 
 import "swiper/css";
+import { useRouter } from "next/navigation";
 
 interface IMidiaChange {
-  arr: IMovie[] | ISeries[];
+  arr: IMovie[] | ISerie[];
   active: boolean;
 }
 
@@ -28,8 +29,9 @@ export default function Home({
   seriesArr,
 }: {
   moviesArr: IMovie[];
-  seriesArr: ISeries[];
+  seriesArr: ISerie[];
 }) {
+  const router = useRouter();
   const [midiaChange, setMidiaChange] = useState<IMidiaChange>({
     active: true,
     arr: seriesArr,
@@ -76,7 +78,12 @@ export default function Home({
         {midiaChange.arr.map((item) => (
           <SwiperSlide
             key={item.id}
-            className="bg-white rounded-md !flex shadow-md"
+            className="bg-white rounded-md !flex shadow-md cursor-pointer"
+            onClick={() =>
+              router.push(
+                `/populares/${midiaChange.active ? "tv" : "movie"}/${item.id}`
+              )
+            }
           >
             <div className="w-32">
               <Image
