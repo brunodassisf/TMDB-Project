@@ -33,7 +33,7 @@ O projeto faz uso dos endpoints da API TMDB para listar filmes e séries de TV m
 
 -   `https://api.themoviedb.org/3/movie/popular`: Retorna uma lista dos filmes mais populares.
 -   ` https://api.themoviedb.org/3/tv/popular`: Retorna uma lista das séries de TV mais populares.
-- 
+
 ### Detalhes de um Filme ou Série de TV
 Ao clicar em um filme ou série de TV na lista, o projeto exibe os detalhes completos do item selecionado. Os detalhes incluem informações como título, sinopse, elenco, avaliação, entre outros. Essas informações são obtidas através do endpoint da API TMDB:
 
